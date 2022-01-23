@@ -51,9 +51,6 @@ class _LoginPageScreen extends State<LoginScreen> {
         labelText: 'Email',
       ),
       validator: _emailValidator,
-      onSaved: (value) {
-        emailController.text = value!;
-      },
     );
   }
 
