@@ -1,7 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:task_1/screens/home.dart';
+import 'package:task_1/screens/login.dart';
+import 'package:task_1/services/auth.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
@@ -16,11 +15,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   final _formKey = GlobalKey<FormState>();
 
-  final _register = FirebaseAuth.instance;
+  final AuthServices _authServices = AuthServices();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Register Page'),
+      ),
       body: Padding(
         padding: const EdgeInsets.only(top: 160.0),
         child: Form(
@@ -35,10 +37,33 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 color: Colors.white,
               ),
               _registerButton(),
+              const Divider(),
+              _loginTitle(),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _loginTitle() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Text('have an account?'),
+        TextButton(
+          onPressed: () {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const LoginScreen(),
+              ),
+              (Route<dynamic> route) => false,
+            );
+          },
+          child: const Text('Login'),
+        ),
+      ],
     );
   }
 
@@ -59,13 +84,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
       validator: _passwordValidator,
       controller: passwordController,
+      obscureText: true,
     );
   }
 
   Widget _registerButton() {
     return ElevatedButton(
       onPressed: () {
-        _signUp(emailController.text, passwordController.text);
+        _authServices.signUp(
+            context, emailController.text, passwordController.text);
       },
       child: const Text('Register'),
     );
@@ -87,28 +114,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
     if (!regex.hasMatch(value)) {
       return ('Enter Valid Password(Min. 8 Character)');
-    }
-  }
-
-  void _signUp(String email, String password) async {
-    if (_formKey.currentState!.validate()) {
-      try {
-        await _register
-            .createUserWithEmailAndPassword(email: email, password: password)
-            .then((uid) => {
-                  Fluttertoast.showToast(msg: 'Register Successful'),
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(
-                      builder: (context) => HomeScreen(
-                        email: email,
-                        password: password,
-                      ),
-                    ),
-                  ),
-                });
-      } on FirebaseAuthException catch (_) {
-        return null;
-      }
     }
   }
 }

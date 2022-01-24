@@ -1,7 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:task_1/screens/home.dart';
+import 'package:task_1/screens/register.dart';
+import 'package:task_1/services/auth.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -13,16 +12,17 @@ class LoginScreen extends StatefulWidget {
 class _LoginPageScreen extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
 
+  final AuthServices _authServices = AuthServices();
+
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-
-  final _auth = FirebaseAuth.instance;
-
-  String? errorMessage;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Login Page'),
+      ),
       body: Padding(
         padding: const EdgeInsets.only(top: 160.0),
         child: Form(
@@ -37,6 +37,8 @@ class _LoginPageScreen extends State<LoginScreen> {
                 color: Colors.white,
               ),
               _loginButton(),
+              const Divider(),
+              _registerTitle(),
             ],
           ),
         ),
@@ -61,16 +63,38 @@ class _LoginPageScreen extends State<LoginScreen> {
         labelText: 'Password',
       ),
       validator: _passwordValidator,
-      maxLength: 8,
+      obscureText: true,
     );
   }
 
   Widget _loginButton() {
     return ElevatedButton(
       onPressed: () {
-        _signIn(emailController.text, passwordController.text);
+        _authServices.signIn(
+            context, emailController.text, passwordController.text);
       },
       child: const Text('Login'),
+    );
+  }
+
+  Widget _registerTitle() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Text('No account?'),
+        TextButton(
+          onPressed: () {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const RegisterScreen(),
+              ),
+              (Route<dynamic> route) => false,
+            );
+          },
+          child: const Text('Register'),
+        ),
+      ],
     );
   }
 
@@ -90,50 +114,6 @@ class _LoginPageScreen extends State<LoginScreen> {
     }
     if (!regex.hasMatch(value)) {
       return ('Enter Valid Password(Min. 8 Character)');
-    }
-  }
-
-  void _signIn(String email, String password) async {
-    if (_formKey.currentState!.validate()) {
-      try {
-        await _auth
-            .signInWithEmailAndPassword(email: email, password: password)
-            .then((uid) => {
-                  Fluttertoast.showToast(msg: 'Login Successful'),
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(
-                      builder: (context) => HomeScreen(
-                        email: email,
-                        password: password,
-                      ),
-                    ),
-                  ),
-                });
-      } on FirebaseAuthException catch (error) {
-        switch (error.code) {
-          case 'invalid-email':
-            errorMessage = 'Your email address appears to be malformed.';
-            break;
-          case 'wrong-password':
-            errorMessage = 'Your password is wrong.';
-            break;
-          case 'user-not-found':
-            errorMessage = "User with this email doesn't exist.";
-            break;
-          case 'user-disabled':
-            errorMessage = 'User with this email has been disabled.';
-            break;
-          case 'too-many-requests':
-            errorMessage = 'Too many requests';
-            break;
-          case 'operation-not-allowed':
-            errorMessage = 'Signing in with Email and Password is not enabled.';
-            break;
-          default:
-            errorMessage = 'An undefined Error happened.';
-        }
-        Fluttertoast.showToast(msg: errorMessage!);
-      }
     }
   }
 }

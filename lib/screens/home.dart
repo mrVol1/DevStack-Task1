@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:task_1/screens/login.dart';
 import 'package:task_1/screens/register.dart';
+import 'package:task_1/services/auth.dart';
 
 class HomeScreen extends StatelessWidget {
   final String email;
@@ -17,7 +17,7 @@ class HomeScreen extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () {
-              _logOut(context);
+              logOut(context);
             },
             child: const Text(
               'LogOut',
@@ -42,26 +42,10 @@ class HomeScreen extends StatelessWidget {
           Text('password: $password'),
         ],
       ),
-      floatingActionButton: _registerButton(context),
-    );
-  }
-
-  void _logOut(BuildContext context) {
-    Route route = MaterialPageRoute(
-      builder: (context) => const LoginScreen(),
-    );
-    Navigator.push(context, route);
-  }
-
-  Widget _registerButton(BuildContext context) {
-    return FloatingActionButton(
-      onPressed: () {
-        Route route = MaterialPageRoute(
-          builder: (context) => const RegisterScreen(),
-        );
-        Navigator.push(context, route);
-      },
-      child: const Icon(Icons.add),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {},
+        child: const Icon(Icons.add),
+      ),
     );
   }
 }
