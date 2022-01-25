@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:task_1/screens/register.dart';
 import 'package:task_1/services/auth.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -41,10 +40,6 @@ class HomeScreen extends StatelessWidget {
           Text('email: $email'),
           Text('password: $password'),
         ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        child: const Icon(Icons.add),
       ),
     );
   }

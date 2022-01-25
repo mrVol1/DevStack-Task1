@@ -110,7 +110,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String? _passwordValidator(String? value) {
     RegExp regex = RegExp(r'^.{8,}$');
     if (value!.isEmpty) {
-      return ('Password is required for login');
+      return ('Password is required for register');
     }
     if (!regex.hasMatch(value)) {
       return ('Enter Valid Password(Min. 8 Character)');
